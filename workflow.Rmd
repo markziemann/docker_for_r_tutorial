@@ -156,7 +156,7 @@ make_volcano(de,name)
 
 Heatmap of top genes.
 
-```{r,heat}
+```{r,heat,fig.width=7,fig.height=7}
 
 colfunc <- colorRampPalette(c("blue", "white", "red"))
 topgenes <- rownames(head(de,30))
