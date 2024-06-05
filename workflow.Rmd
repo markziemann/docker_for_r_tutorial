@@ -64,7 +64,7 @@ gt$accession <- rownames(gt)
 rownames(x) <- sapply(strsplit(rownames(x),"\\."),"[[",1)
 x  <- merge(gt,x,by=0)
 rownames(x) <- paste(x$Row.names, x$GeneSymbol)
-x <- x[,-c(1:3)] 
+x <- x[,-c(1:3)]
 
 # counts
 x1 <- x[,which(colnames(x) %in% s1$SRR_accession)]
@@ -170,7 +170,7 @@ heatmap.2(top,trace="none",col=colfunc(25),scale="row", margins = c(10,20))
 
 ```{r,save}
 
-saveRDS(m,"workflow.Rds")
+saveRDS(de,"workflow.Rds")
 
 ```
 
