@@ -1,11 +1,9 @@
-FROM bioconductor/bioconductor_docker:RELEASE_3_19
+FROM bioconductor/bioconductor_docker:3.21-R-4.5.2
 
 # Update apt-get
-RUN apt-get update \
+RUN apt-get update -y \
         && apt-get upgrade -y \
-        && apt-get install -y nano git libncurses-dev xorg openbox \
-        ## Install the python package magic wormhole to send files
-        && pip install magic-wormhole           \
+        && apt-get install -y nano git x11-apps \
         ## Remove packages in '/var/cache/' and 'var/lib'
         ## to remove side-effects of apt-get update
         && apt-get clean \
@@ -21,5 +19,5 @@ RUN Rscript -e 'BiocManager::install(c("getDEE2","DESeq2"))'
 RUN git clone https://github.com/markziemann/docker_for_r_tutorial.git
 
 # Set the container working directory
-ENV DIRPATH /docker_for_r_tutorial
+ENV DIRPATH=/docker_for_r_tutorial
 WORKDIR $DIRPATH
