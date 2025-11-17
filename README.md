@@ -17,19 +17,20 @@ with an R workflow.
 
 On Ubuntu you can use:
 
-`sudo apt install docker.io`
+```
+sudo apt update
+sudo apt install docker.io
+```
 
 Other OSs will vary.
 
 ## Step 1: Write your R Markdown script
 
 You probably have a workflow that you've been working on which works for your current version of R.
-Before we incorporate it into a Docker environement, make sure it compiles.
+Before we incorporate it into a Docker environement, use the command `rmarkdown::render("workflow.Rmd")`
+at the command line to execute it and ensure it completes without error.
 
-Use the command rmarkdown::render("workflow.Rmd") at the command line to execute it and ensure it
-completes without error.
-
-If you don't have an Rmd script, you could try the one called workflow.Rmd in this repo, which uses a
+If you don't have an Rmd script, you could try the one called `workflow.Rmd` in this repo, which uses a
 few CRAN and Bioconductor packages to analyse RNA-seq data from [DEE2](dee2.io).
 
 ## Step 2: Put the R Markdown script in a GitHub repo
@@ -41,11 +42,13 @@ changes to GitHub with `git push`.
 Confirm on GitHub that the changes have propagated.
 If you don't like GitHub you can use another service like GitLab or Codeberg.
 
-## Step 3: Make an account on Dockerhub
+## Step 3: Make an account on Dockerhub (optional; but recommended)
 
+This is only neccessary if you want to upload and share your image on DockerHub.
 Go to the [Dockerhub website](https://hub.docker.com/) and create an account.
 Then at the command line use the `docker login` command to establish your identity.
-This is an important step for sharing the newly created Docker image to Dockerhub later on.
+You can skip this step if you want to share your image in other ways, like
+Biocontainers or uploading the image to Zenodo.
 
 ## Step 4: Make a Dockerfile
 
@@ -98,13 +101,21 @@ root@9a338cb709c6:/docker_for_r_tutorial#
 Run `ls` to show the contents of the project folder.
 Then run `git pull` to ensure that the code is up to date.
 
-Run `R` on the command line and then execute the R Marldown script:
+Run `R` on the command line and then execute the R Markdown script:
 
 ```
 rmarkdown::render("workflow.Rmd")
 ```
 
-It should complete just fine, creating the HTML document and any other output files.
+If your Rmd script encounters errors due to missing dependencies, you may need to
+amend the Dockerfile in Step 4, followed by rebuilding the image.
+If there is an error in the Rmd script itself, you will need to change it by pushing
+changes to GitHub and then `git pull` inside the container.
+
+If the script completed just fine, it will have created the HTML report and any other output files.
+It is safe to `exit` the container now.
+
+## Step 7: Retrieve the results
 
 On the host machine, run `docker ps` to bring up the existing docker containers. 
 
@@ -116,7 +127,7 @@ CONTAINER ID   IMAGE                            COMMAND   CREATED         STATUS
 
 Notice the container ID which is a hexadecimal string.
 We'll need that to retrieve the output files.
-In the next command we copy the project file to the host, so that we can inspect the results.
+In the next command we copy the project files to the host, so that we can inspect the results.
 
 ```
 docker cp 9a338cb709c6:/docker_for_r_tutorial/ docker_output
@@ -129,21 +140,11 @@ If you need to make changes, do that on the local host machine, push changes to 
 them inside the container before executing again.
 This may need a few cycles of changes to get things working just right.
 
-## Step 7: Write a meaningful README
+## Step 8: Write a meaningful README
 
-Now that the workflow is working, it is a good idea to document the project by developing a good README.
+Now that your workflow is working, it is a good idea to document the project by developing a good README.
 It should describe the motivation of the project, the contents and how to reproduce.
 Push the changes to GitHub.
-
-## Step 8: Rebuild the image
-
-Now that the workflow is working and the repo is documented, the image needs to be updated to reflect
-these changes.
-Run docker rmi to delete the image and then rebuild with the "--no-cache" option.
-
-```
-docker build -t mziemann/docker_for_r_tutorial . --no-cache
-```
 
 ## Step 9: Push the image to Dockerhub
 
