@@ -1,0 +1,25 @@
+# Build an image based on a Dockerfile
+docker build -t mziemann/docker_for_r_tutorial .
+
+# get Rstudio server IDE through the web browser (http://localhost:8787) 
+docker run \
+	-e PASSWORD=bioc \
+	-p 8787:8787 \
+	mziemann/docker_for_r_tutorial:latest
+
+# or run in terminal mode - may be best option for servers
+docker run -it \
+    -e DISPLAY=localhost:10.0  \
+    -v $HOME/.Xauthority:/root/.Xauthority:rw  \
+    --network host  \
+    mziemann/docker_for_r_tutorial bash
+
+# inside the container, pull the latest project codes
+git pull
+
+# open R and start working or run a script
+Rscript -e "rmarkdown::render('workflow.Rmd')"
+
+# run this on the host machine to check output
+docker cp $(docker ps -aql):/docker_for_r_tutorial docker_data
+firefox docker_data/workflow.html
